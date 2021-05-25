@@ -1,3 +1,10 @@
+// Caine Simpson
+// CaineESimpson@gmail.com
+// Time for setup: 30 minutes
+// Time for JS (The parsing of the data and getting it ready to display) Section: 2 hours
+// Time for Front End: 
+// Total Time: 
+
 var mysql = require('mysql')
 var express = require('express')
 var port = 8080
@@ -14,6 +21,8 @@ app.listen(port, () => {
 })
 
 console.log("We run")
+
+// Hard coding these values just for quickness, if I was creating this as a full industry application theses values would come from environment variables.
 var connection = mysql.createConnection({
     host: "127.0.0.1",
     user: 'root',
@@ -21,6 +30,7 @@ var connection = mysql.createConnection({
     database: 'lpl'
 })
 
+// Try connecting
 connection.connect(function (error) {
     if (error) {
         throw error;
@@ -44,7 +54,7 @@ connection.query('SELECT trace_id, trace_data FROM test', function(error, result
         // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
     });
 
-    console.log("Completed Graph set: ", graph_set)
+    // console.log("Completed Graph set: ", graph_set)
     // let data_set_one = create_data_set(data)
 
     // console.log("datasettest", data_set_one)
@@ -75,17 +85,16 @@ function create_data_set(data) {
             // console.log("pushing ", data[count])
 
             packet.push(data[count].toString(16))
-            
+            // console.log("step size", step)
             // packet = packet.join('')
             // console.log(packet.join(''))
-            // console.log(packet)
-
-            // console.log("back to number", parseInt(packet, 32))
-
+            console.log(packet)
+            // console.log("Packet Size", packet.length)
             step++
+            // console.log("back to number", parseInt(packet, 32))
         } else {
             // console.log('packet', packet.join(''))
-
+            
             let new_packet = convertToHex(packet)
             let complement = convertHexToSigned(new_packet)
 
