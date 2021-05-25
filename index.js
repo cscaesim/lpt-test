@@ -33,18 +33,21 @@ connection.query('SELECT trace_id, trace_data FROM test', function(error, result
     if (error) throw error;
     
 
-    let data = results[0].trace_data
+    // let data = results[0].trace_data
 
     let graph_set = []
 
+    // Loop through each set of BLOBS, to conver the values into a data set of signed ints
     results.forEach(element => {
         let data_set = create_data_set(element.trace_data)
-        // console.log("DATASET VALUE: ", data_set)
+        graph_set.push(data_set)
+        // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
     });
 
-    let data_set_one = create_data_set(data)
+    console.log("Completed Graph set: ", graph_set)
+    // let data_set_one = create_data_set(data)
 
-    console.log("datasettest", data_set_one)
+    // console.log("datasettest", data_set_one)
 
     run_test(['ff','ff','33','01'])
     run_test(['c3', 'bf', '23', '2e'])
@@ -62,7 +65,11 @@ function create_data_set(data) {
     let step = 1;
     let trace_data_size = data.length;
 
+    // A while loop to step through each value in the list, because the list is so large,
+    // Using a while loop will get through each value in the "packet"
     while (count < trace_data_size) {
+
+        // We use a check to partition each value into sets of 4 (or less), in order to convert to the numbers we need.
         if (step <= packet_size) {
 
             // console.log("pushing ", data[count])
@@ -108,8 +115,6 @@ function run_test(packet) {
 
     let reading = convertToReading(comp)
     console.log("reading test", reading)
-
-
 }
 
 
@@ -121,12 +126,15 @@ function convertToHex(packet) {
     return hex
 }
 
+// Function to convert from the hex above to signed integers.
+// I was going to use a fancy algorithm to do so, but reading over some code on others attempts, this might be enough (?)
 function convertHexToSigned(hexString) {
     let value = parseInt(hexString, 16)
     // This should convert 2's complement but we shall see :)
     return -(~value + 1)
 }
 
+// Convert it to reading to use.
 function convertToReading(value) {
     return (value / 1000)
 }
