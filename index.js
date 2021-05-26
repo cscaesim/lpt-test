@@ -4,6 +4,7 @@
 // Time for JS (The parsing of the data and getting it ready to display) Section: 2 hours
 // Time for Front End: 
 // Total Time: 
+
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
 var express = require('express');
@@ -26,28 +27,30 @@ app.get('/', (req, res) => {
         if (err) {
             return null
         } else {
-        let data = results[0].trace_data
+        // let data = results[0].trace_data
+
+        let data = results
     
         let graph_set = []
     
         // Loop through each set of BLOBS, to conver the values into a data set of signed ints
     
-        // results.forEach(element => {
-        //     let data_set = create_data_set(element.trace_data)
-        //     graph_set.push(data_set)
-        //     // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
-        // });
+        results.forEach(element => {
+            let data_set = create_data_set(element.trace_data)
+            graph_set.push(data_set)
+            // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
+        });
     
         // console.log("Completed Graph set: ", graph_set)
-        let data_set_one = create_data_set(data);
+        // let data_set_one = create_data_set(data);
         // let data_set_one = alternative_data_set(data);
-        console.log("datasettest", data_set_one)
+        console.log("graph_set", graph_set)
     
         run_test(['ff','ff','33','01'])
         run_test(['c3', 'bf', '23', '2e'])
         // console.log('hextoInt?', parsInt(packet.join(''), 16))
 
-        data_set = data_set_one
+        data_set = graph_set
         // console.log(set)
         
         }
@@ -203,7 +206,7 @@ function convertHexToSigned(hexString) {
 
 // Convert it to reading to use.
 function convertToReading(value) {
-    return (value / 100000000)
+    return (value / 1000)
 }
 
 // Little function to deal with single digts, like '1' or '2', converts them into '01', '02'
