@@ -17,7 +17,7 @@ const app = express()
 app.use(express.static(path.join(__dirname, '/lpt')))
 app.use(bodyParser.urlencoded({extended: true}))
 app.engine('html', require('ejs').renderFile)
-app.set('view engine', 'html')
+app.set('view engine', 'ejs')
 
 app.get('/', (req, res) => {
     connect_database()
@@ -39,7 +39,8 @@ app.get('/', (req, res) => {
         // });
     
         // console.log("Completed Graph set: ", graph_set)
-        let data_set_one = create_data_set(data)    
+        let data_set_one = create_data_set(data);
+        // let data_set_one = alternative_data_set(data);
         console.log("datasettest", data_set_one)
     
         run_test(['ff','ff','33','01'])
@@ -51,7 +52,7 @@ app.get('/', (req, res) => {
         
         }
     console.log('data set', data_set)
-    res.render('./main.ejs', {data: data_set})
+    res.render('./main.ejs', { data: data_set })
     // return data_set
     })
     console.log("GRAPH DATA", data_set)
@@ -131,11 +132,40 @@ function create_data_set(data) {
             set.push(reading)
             step = 1;
             packet = [];
-            packet.push(data[count].toString(16));
+            packet.push(checkAndHandleSingleDigit(data[count].toString(16)));
         }
         // console.log("count", count)
         count++
         // console.log("set", set)
+    }
+
+    return set;
+}
+
+
+function alternative_data_set(data) {
+    let step = 0;
+    let packet_size = 4;
+    let packet = [];
+    let set = [];
+
+    while (data.length !== 0) {
+        if (step < packet_size) {
+            let test = data.shift()
+            let hexValue = checkAndHandleSingleDigit(test.toString(16))
+            packet.push(hexValue);
+            step++;
+        } else {
+            let new_packet = convertToHex(packet)
+            let complement = convertHexToSigned(new_packet)
+            let reading = convertToReading(complement)
+            set.push(reading)
+            step = 1;
+            packet = []
+            let test = data.shift()
+            let hexValue = checkAndHandleSingleDigit(test.toString(16))
+            packet.push(hexValue)
+        }
     }
 
     return set;
@@ -173,7 +203,7 @@ function convertHexToSigned(hexString) {
 
 // Convert it to reading to use.
 function convertToReading(value) {
-    return (value / 1000)
+    return (value / 100000000)
 }
 
 // Little function to deal with single digts, like '1' or '2', converts them into '01', '02'
