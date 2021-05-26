@@ -4,16 +4,57 @@
 // Time for JS (The parsing of the data and getting it ready to display) Section: 2 hours
 // Time for Front End: 
 // Total Time: 
-
 var mysql = require('mysql')
 var express = require('express')
 var port = 8080
+var path = require('path');
 
 
 const app = express()
+// var data_set = []
+
+app.use(express.static(path.join(__dirname, '/lpt')))
+app.engine('html', require('ejs').renderFile)
+app.set('view engine', 'html')
 
 app.get('/', (req, res) => {
-    res.send("Hello Work");
+    connect_database()
+    var data_set = []
+    get_data_set( function(err, results) {
+        if (err) {
+            return null
+        } else {
+        let data = results[0].trace_data
+    
+        let graph_set = []
+    
+        // Loop through each set of BLOBS, to conver the values into a data set of signed ints
+    
+        // results.forEach(element => {
+        //     let data_set = create_data_set(element.trace_data)
+        //     graph_set.push(data_set)
+        //     // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
+        // });
+    
+        // console.log("Completed Graph set: ", graph_set)
+        let data_set_one = create_data_set(data)    
+        console.log("datasettest", data_set_one)
+    
+        run_test(['ff','ff','33','01'])
+        run_test(['c3', 'bf', '23', '2e'])
+        // console.log('hextoInt?', parsInt(packet.join(''), 16))
+
+        data_set = data_set_one
+        // console.log(set)
+        
+        }
+    console.log('data set', data_set)
+    res.render('./main.html', {data: data_set})
+    // return data_set
+    })
+    console.log("GRAPH DATA", data_set)
+
+   
 })
 
 app.listen(port, () => {
@@ -31,48 +72,34 @@ var connection = mysql.createConnection({
 })
 
 // Try connecting
-connection.connect(function (error) {
-    if (error) {
-        throw error;
-    }
-
-    console.log("Connection Successful")
-});
-
-connection.query('SELECT trace_id, trace_data FROM test', function(error, results, fields) {
-    if (error) throw error;
+function connect_database() {
+    connection.connect(function (error) {
+        if (error) {
+            throw error;
+        }
     
-
-    // let data = results[0].trace_data
-
-    let graph_set = []
-
-    // Loop through each set of BLOBS, to conver the values into a data set of signed ints
-    results.forEach(element => {
-        let data_set = create_data_set(element.trace_data)
-        graph_set.push(data_set)
-        // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
+        console.log("Connection Successful")
     });
+}
 
-    // console.log("Completed Graph set: ", graph_set)
-    // let data_set_one = create_data_set(data)
-
-    // console.log("datasettest", data_set_one)
-
-    run_test(['ff','ff','33','01'])
-    run_test(['c3', 'bf', '23', '2e'])
-    // console.log('hextoInt?', parsInt(packet.join(''), 16))
-
-    // console.log(set)
-
-})
+function get_data_set(callback) {
+    
+    connection.query('SELECT trace_id, trace_data FROM test', function(error, results) {
+        if (error) {
+            callback(error,null)
+        } else {
+            return callback(null, results)
+        }
+  
+    })
+}
 
 function create_data_set(data) {
     let count = 0;
     let packet = [];
     let packet_size = 4;
     let set = [];
-    let step = 1;
+    let step = 0;
     let trace_data_size = data.length;
 
     // A while loop to step through each value in the list, because the list is so large,
@@ -80,20 +107,18 @@ function create_data_set(data) {
     while (count < trace_data_size) {
 
         // We use a check to partition each value into sets of 4 (or less), in order to convert to the numbers we need.
-        if (step <= packet_size) {
+        if (step < packet_size) {
 
             // console.log("pushing ", data[count])
-
-            packet.push(data[count].toString(16))
-            // console.log("step size", step)
-            // packet = packet.join('')
-            // console.log(packet.join(''))
-            console.log(packet)
-            // console.log("Packet Size", packet.length)
+            let hexValue = checkAndHandleSingleDigit(data[count].toString(16))
+            // let hexValue = data[count].toString(16)
+            // packet.push(data[count].toString(16))
+            packet.push(hexValue)
             step++
+
             // console.log("back to number", parseInt(packet, 32))
         } else {
-            // console.log('packet', packet.join(''))
+            // console.log('packet', packet)
             
             let new_packet = convertToHex(packet)
             let complement = convertHexToSigned(new_packet)
@@ -104,6 +129,7 @@ function create_data_set(data) {
             set.push(reading)
             step = 1;
             packet = [];
+            packet.push(data[count].toString(16));
         }
         // console.log("count", count)
         count++
@@ -148,4 +174,12 @@ function convertToReading(value) {
     return (value / 1000)
 }
 
+// Little function to deal with single digts, like '1' or '2', converts them into '01', '02'
+function checkAndHandleSingleDigit(entry) {
+    if (entry.length === 1) {
+        return `0${entry}`
+    } else {
+        return entry
+    }
+}
 

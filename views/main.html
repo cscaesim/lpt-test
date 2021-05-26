@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> BLOB Graph </title>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
+        <script type="text/javascript">
+        
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart);
+
+            function drawChart() {
+                var graph_set = {data};
+                console.log("graph_set", graph_set)
+                // var data = google.visualization.arrayToDataTable(graph_set);
+                // data.addColumn('data')
+
+                var data = new google.visualization.DataTable();
+                data.addColumn('number', "MHZ")
+
+                data.addRows([graph_set])
+
+                var options = {
+                    title: "Trace"
+                }
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart'));
+
+                chart.draw(data, options);
+            }
+
+            function createDataTable(set) {
+
+            }
+        
+            // window.onLoad = function () {
+
+            //     var options = {
+            //         chart: {
+            //             type: 'line'
+            //         },
+            //         series: [{
+            //             name: 'Trace',
+            //             data: [10,20,20,30,30,40,10,50,10]
+            //         }],
+            //         xaxis: {
+            //             Traces: [1,2,3,4,5,6,7,8,9,10]
+            //         }
+            //     }
+
+            //     var chart = new ApexCharts(document.querySelector("#chart"), options);
+            //     console.log('render?')
+            //     chart.render();
+            // }
+        </script>
+    </head>
+
+    <body>
+        <div id="chart"></div>
+    </body>
+</html>
