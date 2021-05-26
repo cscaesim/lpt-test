@@ -1,100 +1,115 @@
+<head>
+    <title> BLOB Graph </title>
+    <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+</head>
 
-    <head>
-        <title> BLOB Graph </title>
-        <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
-    </head>
+<body>
+    <h1>Test</h1>
+    <canvas id="chart" style="width:300; height:300"></canvas>
+</body>
 
-    <body>
-        <h1>Test</h1>
-        <canvas id="chart" style="width:300; height:300"></canvas>
-    </body>
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js" integrity="sha512-yadYcDSJyQExcKhjKSQOkBKy2BLDoW6WnnGXCAkCoRlpHGpYuVuBqGObf3g/TdB86sSbss1AOP4YlGSb6EKQPg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script> -->
-    <script type="text/javascript">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js"
+    integrity="sha512-yadYcDSJyQExcKhjKSQOkBKy2BLDoW6WnnGXCAkCoRlpHGpYuVuBqGObf3g/TdB86sSbss1AOP4YlGSb6EKQPg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript">
 
     // Constants:
     let refresh_time = 500;
-    
-        // google.charts.load('current', {'packages':['corechart']});
-        // google.charts.setOnLoadCallback(drawChart);
-        var graph_data = '<%= data[0] %>';
-        
-        console.log('data', graph_data);
-        
-        window.onload = function() {
-            var chart = document.getElementById('chart').getContext('2d');
 
-            let trace_number = 0;
-            setInterval(function() {
-                generate_graph(trace_number)
-                if (trace_number < 50) {
-                    trace_number++;
-                } else {
-                    trace_number = 0;
-                }
-            }, refresh_time + 500);
-            // var graph_set = {data}
-        }
+    // google.charts.load('current', {'packages':['corechart']});
+    // google.charts.setOnLoadCallback(drawChart);
+    var graph_data = '<%= data[0] %>';
+    // var time_data = '<%= t_set %>';
 
-// Generates our graph, using GraphJS
-// Takes in a set of values
-        function generate_graph(trace) {
-            
-            let x_axis = create_labels_set(graph_data)
-            var newChart = new Chart(chart, {
-                type: 'line',
-                data: {
-                    labels: x_axis,
-                    datasets: [{
-                        label: 'Traces',
-                        data: graph_data,
-                        fill: false,
-                        borderColor: 'rgb(175, 92, 192)',
-                    }]
-                },
-                
-                options: {
-                    spanGaps: true,
-                    scales: {
-                        y: {
-                            suggestedMin: -10,
-                            suggestedMax: 5,
-                            ticks: {
-                                min: -10,
-                                stepSize: 4
-                            }
-                        },
-                        x: {suggestedMin: 0, 
-                            max: 800,
-                            ticks: {
-                                stepSize: 5
-                            }}
+    console.log('data', graph_data);
+
+    window.onload = function ()
+    {
+        var chart = document.getElementById('chart').getContext('2d');
+        // Track which trace we're on for displaying
+        let trace_number = 0;
+        generate_graph(trace_number);
+        // setInterval(function ()
+        // {
+        //     console.log("Displaying trace: ", trace_number)
+        //     generate_graph(trace_number)
+        //     if (trace_number < 50)
+        //     {
+        //         trace_number++;
+        //     } else
+        //     {
+        //         trace_number = 0;
+        //     }
+        // }, refresh_time + 500);
+        // var graph_set = {data}
+    }
+
+    // Generates our graph, using GraphJS
+    // Takes in a set of values
+    function generate_graph(trace)
+    {
+        let trace_increment = trace++;
+        // Create our list of x-axis for graph compatibility
+        // I think Chartjs 
+        let x_axis = create_labels_set(graph_data)
+        var newChart = new Chart(chart, {
+            type: 'line',
+            data: {
+                labels: x_axis,
+                datasets: [{
+                    label: 'Traces',
+                    data: graph_data,
+                    fill: false,
+                    borderColor: 'rgb(175, 92, 192)',
+                }]
+            },
+
+            options: {
+                scaleBeginAtZero: true,
+                spanGaps: true,
+                scales: {
+                    y: {
+                        suggestedMin: -10,
+                        suggestedMax: 5,
+                        ticks: {
+                            min: -10,
+                            stepSize: 4
+                        }
+                    },
+                    x: {
+                        suggestedMin: 0,
+                        max: 800,
+                        ticks: {
+                            stepSize: 5
+                        }
                     }
                 }
-            });
-
-            // Because I can't reference the graph before it exists, I've just added a Interval here where it will destroy the graph, allowing a new one to be created.
-            setInterval(function() {
-                newChart.destroy();
-            }, refresh_time)
-        }
-
-        // Because the graphs need labels to create the functions, I'm going to
-        // Create a list of empty labels for the x axis
-        // Filling it with actual values isn't too bad either, but no values is a bit cleaner.
-        function create_labels_set(graph_data) {
-            let array_length = 900
-            let array = []
-            let count = 1;
-            
-            while (count < (array_length)) {
-                array.push(count)
-                count++;
             }
+        });
 
-            return array;
+        // Because I can't reference the graph before it exists, I've just added a Interval here where it will destroy the graph, allowing a new one to be created.
+        setInterval(function ()
+        {
+            newChart.destroy();
+            generate_graph(trace_increment);
+        }, refresh_time + 500)
+    }
+
+    // Because the graphs need labels to create the functions, I'm going to
+    // Create a list of empty labels for the x axis
+    // Filling it with actual values isn't too bad either, but no values is a bit cleaner.
+    function create_labels_set(graph_data)
+    {
+        let array_length = 900
+        let array = []
+        let count = 1;
+
+        while (count < (array_length))
+        {
+            array.push(count)
+            count++;
         }
-    </script>
+
+        return array;
+    }
+</script>
