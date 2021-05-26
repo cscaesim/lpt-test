@@ -4,9 +4,10 @@
 // Time for JS (The parsing of the data and getting it ready to display) Section: 2 hours
 // Time for Front End: 
 // Total Time: 
-var mysql = require('mysql')
-var express = require('express')
-var port = 8080
+var mysql = require('mysql');
+var bodyParser = require('body-parser');
+var express = require('express');
+var port = 8080;
 var path = require('path');
 
 
@@ -14,6 +15,7 @@ const app = express()
 // var data_set = []
 
 app.use(express.static(path.join(__dirname, '/lpt')))
+app.use(bodyParser.urlencoded({extended: true}))
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
@@ -49,7 +51,7 @@ app.get('/', (req, res) => {
         
         }
     console.log('data set', data_set)
-    res.render('./main.html', {data: data_set})
+    res.render('./main.ejs', {data: data_set})
     // return data_set
     })
     console.log("GRAPH DATA", data_set)
