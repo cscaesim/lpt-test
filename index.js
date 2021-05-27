@@ -40,8 +40,8 @@ app.get('/', (req, res) =>
             // Loop through each set of BLOBS, to conver the values into a data set of signed ints
             results.forEach(element =>
             {
-                let data_set = create_data_set(element.trace_data)
-                graph_set.push(data_set)
+                let set = create_data_set(element.trace_data)
+                graph_set.push(set)
                 time_set.push(element.trace_time)
                 // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
             });
@@ -56,12 +56,16 @@ app.get('/', (req, res) =>
             close_database_connection();
             data_set = graph_set;
             // console.log(set)
-            console.log("data set length: ", data_set.length);
+            // console.log("data set length: ", data_set.length);
+            // console.log("data set", data_set);
 
+            var json = JSON.stringify(data_set)
+            // console.log("JSON TEST", json)
+            res.render('./main.ejs', { data: json, t_set: time_set })
         }
         // console.log('data set', data_set)
 
-        res.render('./main.ejs', { data: data_set, t_set: time_set })
+        
         // return data_set
     });
 });
@@ -242,7 +246,7 @@ function convertHexToSigned(hexString)
 // MARK:- Functino to convert signed value to 'reading' to use.
 function convertToReading(value)
 {
-    return (value / 1000);
+    return (value / 100000000);
 }
 
 // Little function to deal with single digts, like '1' or '2', converts them into '01', '02'

@@ -18,8 +18,13 @@
 
     // google.charts.load('current', {'packages':['corechart']});
     // google.charts.setOnLoadCallback(drawChart);
-    var graph_data = '<%= data[0] %>';
-    // var time_data = '<%= t_set %>';
+    var graph_data = '<%= data %>';
+    // var time_data = '<%= t_set[0] %>';
+
+
+    var array_object = JSON.parse(graph_data);
+    // console.log("convert from json test", test[0]);
+
 
     console.log('data', graph_data);
 
@@ -28,7 +33,9 @@
         var chart = document.getElementById('chart').getContext('2d');
         // Track which trace we're on for displaying
         let trace_number = 0;
+        console.log("data set test :", array_object[0]);
         generate_graph(trace_number);
+
         // setInterval(function ()
         // {
         //     console.log("Displaying trace: ", trace_number)
@@ -49,21 +56,25 @@
     function generate_graph(trace)
     {
 
+        let data = array_object[trace]
+        console.log("data test", array_object[0]);
+
         if (window.newChart != null) {
             window.newChart.destroy();
         }
 
-        let trace_increment = trace++;
+        
         // Create our list of x-axis for graph compatibility
         // I think Chartjs 
-        let x_axis = create_labels_set(graph_data)
+        let x_axis = create_labels_set(data)
+        console.log("trace test : ", trace)
         window.newChart = new Chart(chart, {
             type: 'line',
             data: {
                 labels: x_axis,
                 datasets: [{
-                    label: 'Traces',
-                    data: graph_data,
+                    label: `Traces`,
+                    data: data,
                     fill: false,
                     borderColor: 'rgb(175, 92, 192)',
                 }]
@@ -74,18 +85,18 @@
                 spanGaps: true,
                 scales: {
                     y: {
-                        suggestedMin: -10,
-                        suggestedMax: 5,
+                        min: -30,
+                        max: 30,
                         ticks: {
-                            min: -10,
-                            stepSize: 4
+                            min: -15,
+                            stepSize: 2
                         }
                     },
                     x: {
                         suggestedMin: 0,
-                        max: 800,
+                        max: 900,
                         ticks: {
-                            stepSize: 5
+                            stepSize: 10
                         }
                     }
                 }
@@ -93,12 +104,13 @@
         });
 
         // Because I can't reference the graph before it exists, I've just added a Interval here where it will destroy the graph, allowing a new one to be created.
-        setInterval(function ()
-        {
-                generate_graph(trace_increment)
+        // setInterval(function ()
+        // {
+        //         trace = trace++;
+        //         generate_graph(trace);
     
-            // ;
-        }, refresh_time + 500);
+        //     // ;
+        // }, refresh_time + 500);
     }
 
     // Because the graphs need labels to create the functions, I'm going to
