@@ -10,7 +10,7 @@ Mysql
 
 npm init and npm install to get it setup. Node index.js to run
 
-First of all, apologies for not doing as many commit’s as you probably wanted to, I got focused and tend to commit when I do very big changes or stop for the day. I also apologize for the simpler coding possibly in comparison to others, bit rusty with JavaScript and prefer to have my code be simple/easy to read.
+First of all, apologies for not doing as many commit’s as you probably wanted to, I got focused and tend to commit when I do very big changes or stop for the day. I also apologize for the simpler coding possibly in comparison to others, bit rusty with JavaScript and prefer to have my code be simple/easy to read. I also am slightly unsure about my dataset, the test file did mention that all the values would be negative, but multiple checks cause me to think that there would be positive numbers at least once or twice in the data set.
 
 This is a challenge project for the LP Technologies test, and this readme will have general thoughts and clarifications.
 
