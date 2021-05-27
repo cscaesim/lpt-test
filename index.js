@@ -1,6 +1,6 @@
 // Caine Simpson
 // CaineESimpson@gmail.com
-// Time taken: Roughly a day and a half of coding and problem solving (and re-learning some stuff).
+// Time taken: Roughly a day and a half of coding and problem solving (and re-learning some stuff) spread over T/W/R.
 
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
@@ -16,6 +16,15 @@ app.use(express.static(path.join(__dirname, '/lpt')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs');
+
+// Hard coding these values just for quickness, if I was creating this as a full industry application theses values would come from environment variables.
+var connection = mysql.createConnection({
+    host: "127.0.0.1",
+    user: 'root',
+    password: 'toor',
+    database: 'lpl'
+});
+
 
 // Our express code to launch backend and do server side stuff.
 // Switched from html to ejs view engine in order to easily get our data_set into the front end script
@@ -77,15 +86,8 @@ app.listen(port, () =>
     console.log(`Listening ${port}`);
 });
 
-// Hard coding these values just for quickness, if I was creating this as a full industry application theses values would come from environment variables.
-var connection = mysql.createConnection({
-    host: "127.0.0.1",
-    user: 'root',
-    password: 'toor',
-    database: 'lpl'
-});
 
-// Database function to connect to the database.
+// MARK:- Database function to connect to the database.
 function connect_database()
 {
     connection.connect(function (error)
@@ -107,7 +109,7 @@ function close_database_connection()
 }
 
 // Our query function to get the database values.
-// Callback to get the value from the query, into a global set for parsing
+// MARK:- Callback to get the value from the query, into a global set for parsing
 function get_data_set(callback)
 {
     connection.query('SELECT trace_id, trace_data, trace_time FROM test', function (error, results)
@@ -232,12 +234,6 @@ function convertToReading(value)
     // I'm dividing by 10 million basically to to make the numbers small enough to display easily,
     // The massive numbers were crippling the data set
     return (value / 100000000);
-}
-
-function convertToTimeArray(string) {
-    var stringArray = string.split(',');
-
-    return stringArray;
 }
 
 //MARK:- Little function to deal with single digts, like '1' or '2', converts them into '01', '02'

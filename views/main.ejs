@@ -3,6 +3,7 @@
     <!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
 </head>
 
+<!-- Body -->
 <body>
     <h1>Trace Measurement Graph</h1>
     <div class="container" style=" position: relative; width:1500; height:100;">
@@ -10,6 +11,8 @@
     </div>
 </body>
 
+<!-- Script Starts here -->
+<!-- ChartJS Script -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js"
     integrity="sha512-yadYcDSJyQExcKhjKSQOkBKy2BLDoW6WnnGXCAkCoRlpHGpYuVuBqGObf3g/TdB86sSbss1AOP4YlGSb6EKQPg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -18,18 +21,16 @@
     // Constants:
     let refresh_time = 1000;
 
-    // google.charts.load('current', {'packages':['corechart']});
-    // google.charts.setOnLoadCallback(drawChart);
     var graph_data = '<%= data %>';
     var time_data = '<%= time_data %>';
 
     // console.log('Time data', time_data);
 
-
+    // Parse the json list to get our array of arrays of values
     var array_object = JSON.parse(graph_data);
 
     var time_data = convertToTimeArray(time_data);
-    // var time_object = JSON.parse(time_data);
+
     console.log("time object", time_data);
     // console.log("convert from json test", test[0]);
 
@@ -42,14 +43,15 @@
         chart.height = 200;
         // Track which trace we're on for displaying
         let trace_number = 0;
-        console.log("data set test :", array_object[0]);
-        // generate_graph(trace_number);
+        // console.log("data set test :", array_object[0]);
+
 
         // Our repeating interval to generate graphs over and over
         setInterval(function ()
         {
             console.log("Displaying trace: ", trace_number)
             generate_graph(trace_number)
+
             if (trace_number < 49)
             {
                 trace_number++;
@@ -60,6 +62,7 @@
         }, refresh_time);
     }
 
+    // MARK:- Graph Generation
     // Generates our graph, using GraphJS
     // Takes in a set of values
     function generate_graph(trace)
@@ -77,7 +80,7 @@
 
         
         // Create our list of x-axis for graph compatibility
-        // I think Chartjs 
+        // Graph is configured to look as decent as possible, but could probably do better.
         let x_axis = create_labels_set(data)
         console.log("trace test : ", trace)
         console.log("time test", time)
@@ -127,13 +130,13 @@
     // Filling it with actual values isn't too bad either, but no values is a bit cleaner.
     function create_labels_set(graph_data)
     {
-        let array_length = 900
-        let array = []
+        let array_length = 900;
+        let array = [];
         let count = 1;
 
         while (count < (array_length))
         {
-            array.push('')
+            array.push('');
             count++;
         }
 
@@ -141,7 +144,8 @@
     }
 
 // MARK:- Create time array for displaying the trace time
-function convertToTimeArray(string) {
+function convertToTimeArray(string) 
+{
     var stringArray = string.split(',');
 
     return stringArray;
