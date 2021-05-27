@@ -5,7 +5,9 @@
 
 <body>
     <h1>Test</h1>
-    <canvas id="chart" style="width:300; height:300"></canvas>
+    <div class="container" style=" position: relative; width:1500; height:100;">
+        <canvas id="chart" ></canvas>
+    </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.3.0/chart.min.js"
@@ -31,23 +33,24 @@
     window.onload = function ()
     {
         var chart = document.getElementById('chart').getContext('2d');
+        chart.height = 200;
         // Track which trace we're on for displaying
         let trace_number = 0;
         console.log("data set test :", array_object[0]);
-        generate_graph(trace_number);
+        // generate_graph(trace_number);
 
-        // setInterval(function ()
-        // {
-        //     console.log("Displaying trace: ", trace_number)
-        //     generate_graph(trace_number)
-        //     if (trace_number < 50)
-        //     {
-        //         trace_number++;
-        //     } else
-        //     {
-        //         trace_number = 0;
-        //     }
-        // }, refresh_time + 500);
+        setInterval(function ()
+        {
+            console.log("Displaying trace: ", trace_number)
+            generate_graph(trace_number)
+            if (trace_number < 50)
+            {
+                trace_number++;
+            } else
+            {
+                trace_number = 0;
+            }
+        }, refresh_time + 500);
         // var graph_set = {data}
     }
 
@@ -82,11 +85,13 @@
 
             options: {
                 scaleBeginAtZero: true,
+                responsive: true,
+                maintainApectRatio: false,
                 spanGaps: true,
                 scales: {
                     y: {
-                        min: -30,
-                        max: 30,
+                        min: -25,
+                        max: 25,
                         ticks: {
                             min: -15,
                             stepSize: 2
@@ -96,6 +101,7 @@
                         suggestedMin: 0,
                         max: 900,
                         ticks: {
+                            min: 5,
                             stepSize: 10
                         }
                     }
@@ -124,7 +130,7 @@
 
         while (count < (array_length))
         {
-            array.push(count)
+            array.push('')
             count++;
         }
 
