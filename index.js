@@ -1,8 +1,6 @@
 // Caine Simpson
 // CaineESimpson@gmail.com
-// Time for JS (The parsing of the data and getting it ready to display) Section: 2 hours
-// Time for Front End: 4.5 hours
-// Total Time: 6.5 hours total
+// Time taken: Roughly a day and a half of coding and problem solving (and re-learning some stuff).
 
 var mysql = require('mysql');
 var bodyParser = require('body-parser');
@@ -23,27 +21,29 @@ app.set('view engine', 'ejs');
 // Switched from html to ejs view engine in order to easily get our data_set into the front end script
 app.get('/', (req, res) =>
 {
-    connect_database()
-    var data_set = []
-    var time_set = []
+    connect_database();
+    var data_set = [];
+    var time_set = [];
 
     get_data_set(function (err, results)
     {
         if (err)
         {
-            return null
-        } else
-        {
+            return null;
+        } else {
             
-            let graph_set = []
+            let graph_set = [];
+
+            time_set = create_time_set(results);
+            console.log("TIME SET", time_set);
 
             // Loop through each set of BLOBS, to conver the values into a data set of signed ints
             results.forEach(element =>
             {
-                let set = create_data_set(element.trace_data)
-                let time_array = create_time_set(element.trace_time)
-                graph_set.push(set)
-                time_set.push(time_array)
+                let set = create_data_set(element.trace_data);
+                // console.log("elements here", element.trace_time);
+                graph_set.push(set);
+                // time_set.push(time_array)
                 // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
             });
 
@@ -59,11 +59,11 @@ app.get('/', (req, res) =>
             // console.log(set)
             // console.log("data set length: ", data_set.length);
             // console.log("data set", data_set);
+4
+            var json = JSON.stringify(data_set);
+            // var time_json = JSON.stringify(time_set);
 
-            var json = JSON.stringify(data_set)
-            var time_json = JSON.stringify()
-
-            res.render('./main.ejs', { data: json, t_set: time_set })
+            res.render('./main.ejs', { data: json, time_data: time_set });
         }
         // console.log('data set', data_set)
 
@@ -185,45 +185,14 @@ function create_time_set(times) {
     let time_array = [];
 
     while (count < times.length) {
-        time_array.push(times[count])
+        time_array.push(times[count].trace_time)
+        count++;
     }
+
+    // console.log("time array ", time_array);
 
     return time_array;
 }
-
-
-function alternative_data_set(data)
-{
-    let step = 0;
-    let packet_size = 4;
-    let packet = [];
-    let set = [];
-
-    while (data.length !== 0)
-    {
-        if (step < packet_size)
-        {
-            let test = data.shift();
-            let hexValue = checkAndHandleSingleDigit(test.toString(16));
-            packet.push(hexValue);
-            step++;
-        } else
-        {
-            let new_packet = convertToHex(packet);
-            let complement = convertHexToSigned(new_packet);
-            let reading = convertToReading(complement);
-            set.push(reading);
-            step = 1;
-            packet = [];
-            let test = data.shift();
-            let hexValue = checkAndHandleSingleDigit(test.toString(16));
-            packet.push(hexValue);
-        }
-    }
-
-    return set;
-}
-
 
 // MARK:- This is a quick function to test my convertions, had to quadruple check to make sure they worked :) 
 function run_test(packet)
@@ -260,10 +229,18 @@ function convertHexToSigned(hexString)
 // MARK:- Functino to convert signed value to 'reading' to use.
 function convertToReading(value)
 {
+    // I'm dividing by 10 million basically to to make the numbers small enough to display easily,
+    // The massive numbers were crippling the data set
     return (value / 100000000);
 }
 
-// Little function to deal with single digts, like '1' or '2', converts them into '01', '02'
+function convertToTimeArray(string) {
+    var stringArray = string.split(',');
+
+    return stringArray;
+}
+
+//MARK:- Little function to deal with single digts, like '1' or '2', converts them into '01', '02'
 function checkAndHandleSingleDigit(entry)
 {
     if (entry.length === 1)

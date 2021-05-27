@@ -4,7 +4,7 @@
 </head>
 
 <body>
-    <h1>Test</h1>
+    <h1>Trace Measurement Graph</h1>
     <div class="container" style=" position: relative; width:1500; height:100;">
         <canvas id="chart" ></canvas>
     </div>
@@ -21,10 +21,16 @@
     // google.charts.load('current', {'packages':['corechart']});
     // google.charts.setOnLoadCallback(drawChart);
     var graph_data = '<%= data %>';
-    // var time_data = '<%= t_set[0] %>';
+    var time_data = '<%= time_data %>';
+
+    // console.log('Time data', time_data);
 
 
     var array_object = JSON.parse(graph_data);
+
+    var time_data = convertToTimeArray(time_data);
+    // var time_object = JSON.parse(time_data);
+    console.log("time object", time_data);
     // console.log("convert from json test", test[0]);
 
 
@@ -44,7 +50,7 @@
         {
             console.log("Displaying trace: ", trace_number)
             generate_graph(trace_number)
-            if (trace_number < 50)
+            if (trace_number < 49)
             {
                 trace_number++;
             } else
@@ -59,7 +65,10 @@
     function generate_graph(trace)
     {
 
-        let data = array_object[trace]
+        let data = array_object[trace];
+        let time = time_data[trace];
+
+        // let current_time = times[trace];
         console.log("data test", array_object[0]);
 
         if (window.newChart != null) {
@@ -71,12 +80,13 @@
         // I think Chartjs 
         let x_axis = create_labels_set(data)
         console.log("trace test : ", trace)
+        console.log("time test", time)
         window.newChart = new Chart(chart, {
             type: 'line',
             data: {
                 labels: x_axis,
                 datasets: [{
-                    label: `Traces`,
+                    label: `${time}`,
                     data: data,
                     fill: false,
                     borderColor: 'rgb(175, 92, 192)',
@@ -111,6 +121,7 @@
         });
     }
 
+    // MARK:- Create Labels for graph
     // Because the graphs need labels to create the functions, I'm going to
     // Create a list of empty labels for the x axis
     // Filling it with actual values isn't too bad either, but no values is a bit cleaner.
@@ -128,4 +139,12 @@
 
         return array;
     }
+
+// MARK:- Create time array for displaying the trace time
+function convertToTimeArray(string) {
+    var stringArray = string.split(',');
+
+    return stringArray;
+}
+
 </script>
