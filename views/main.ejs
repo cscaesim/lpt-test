@@ -48,11 +48,16 @@
     // Takes in a set of values
     function generate_graph(trace)
     {
+
+        if (window.newChart != null) {
+            window.newChart.destroy();
+        }
+
         let trace_increment = trace++;
         // Create our list of x-axis for graph compatibility
         // I think Chartjs 
         let x_axis = create_labels_set(graph_data)
-        var newChart = new Chart(chart, {
+        window.newChart = new Chart(chart, {
             type: 'line',
             data: {
                 labels: x_axis,
@@ -90,9 +95,10 @@
         // Because I can't reference the graph before it exists, I've just added a Interval here where it will destroy the graph, allowing a new one to be created.
         setInterval(function ()
         {
-            newChart.destroy();
-            generate_graph(trace_increment);
-        }, refresh_time + 500)
+                generate_graph(trace_increment)
+    
+            // ;
+        }, refresh_time + 500);
     }
 
     // Because the graphs need labels to create the functions, I'm going to
