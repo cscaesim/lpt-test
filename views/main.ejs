@@ -16,7 +16,7 @@
 <script type="text/javascript">
 
     // Constants:
-    let refresh_time = 500;
+    let refresh_time = 1000;
 
     // google.charts.load('current', {'packages':['corechart']});
     // google.charts.setOnLoadCallback(drawChart);
@@ -39,6 +39,7 @@
         console.log("data set test :", array_object[0]);
         // generate_graph(trace_number);
 
+        // Our repeating interval to generate graphs over and over
         setInterval(function ()
         {
             console.log("Displaying trace: ", trace_number)
@@ -50,8 +51,7 @@
             {
                 trace_number = 0;
             }
-        }, refresh_time + 500);
-        // var graph_set = {data}
+        }, refresh_time);
     }
 
     // Generates our graph, using GraphJS
@@ -80,6 +80,7 @@
                     data: data,
                     fill: false,
                     borderColor: 'rgb(175, 92, 192)',
+                    borderWidth: 1
                 }]
             },
 
@@ -108,15 +109,6 @@
                 }
             }
         });
-
-        // Because I can't reference the graph before it exists, I've just added a Interval here where it will destroy the graph, allowing a new one to be created.
-        // setInterval(function ()
-        // {
-        //         trace = trace++;
-        //         generate_graph(trace);
-    
-        //     // ;
-        // }, refresh_time + 500);
     }
 
     // Because the graphs need labels to create the functions, I'm going to

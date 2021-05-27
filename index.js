@@ -41,8 +41,9 @@ app.get('/', (req, res) =>
             results.forEach(element =>
             {
                 let set = create_data_set(element.trace_data)
+                let time_array = create_time_set(element.trace_time)
                 graph_set.push(set)
-                time_set.push(element.trace_time)
+                time_set.push(time_array)
                 // console.log(`DATASET VALUE: ${element.trace_id}`, data_set)
             });
 
@@ -60,7 +61,8 @@ app.get('/', (req, res) =>
             // console.log("data set", data_set);
 
             var json = JSON.stringify(data_set)
-            // console.log("JSON TEST", json)
+            var time_json = JSON.stringify()
+
             res.render('./main.ejs', { data: json, t_set: time_set })
         }
         // console.log('data set', data_set)
@@ -175,6 +177,18 @@ function create_data_set(data)
     }
 
     return set;
+}
+
+// MARK:- Create our lists of times, matching with our datasets, in order to display our times.
+function create_time_set(times) {
+    let count = 0;
+    let time_array = [];
+
+    while (count < times.length) {
+        time_array.push(times[count])
+    }
+
+    return time_array;
 }
 
 
