@@ -2,6 +2,8 @@
 
 README
 
+Time Taken: A day and a half (roughly 6-8 hours spread over 2-3 days)
+
 Node packages you’ll need:
 
 ejs
